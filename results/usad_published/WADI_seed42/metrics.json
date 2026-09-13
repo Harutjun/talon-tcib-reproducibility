@@ -1,0 +1,22 @@
+{
+  "paper_style_window_OR": {
+    "F1_best_test_threshold": 0.26051449571253565,
+    "precision": 0.9906832298136646,
+    "recall": 0.14997649271274094,
+    "threshold": 585.253662109375,
+    "AUC_ROC": 0.5420920366265923,
+    "AUC_PR_average_precision": 0.20833155504349965,
+    "AUC_PR_trapezoid": 0.20830195318302214
+  },
+  "supplementary_endpoint_point_labels": {
+    "F1_best_test_threshold": 0.25398191993112357,
+    "precision": 0.9161490683229814,
+    "recall": 0.14742628685657172,
+    "threshold": 585.253662109375,
+    "AUC_ROC": 0.537076991458188,
+    "AUC_PR_average_precision": 0.19515617109524533,
+    "AUC_PR_trapezoid": 0.19511114651700057
+  },
+  "paper_reference_without_PA_F1": 0.2328,
+  "note": "Window-OR labels match notebook/paper window detection; endpoint labels are additional pointwise evaluation, not the original experiment."
+}

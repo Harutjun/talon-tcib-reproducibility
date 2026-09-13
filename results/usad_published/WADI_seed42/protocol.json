@@ -1,0 +1,247 @@
+{
+  "dataset": "WADI",
+  "seed": 42,
+  "window": 10,
+  "latent": 100,
+  "epochs": 70,
+  "batch_size": 7919,
+  "optimizer": "two Adam optimizers, upstream defaults lr=0.001",
+  "alpha": 0.5,
+  "beta": 0.5,
+  "upstream_commit": "e25af45c8e1c32783aed94fc7e5ab85effef2b1a",
+  "torch": "2.10.0+cu130",
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 5070",
+  "parameters": 2933191,
+  "downsample": 5,
+  "train_windows": 193528,
+  "val_windows": 48383,
+  "test_windows": 34551,
+  "data": {
+    "files": {
+      "data/WaDi/WADI.A1_9 Oct 2017/WADI_14days.csv": "a275bf4f6464d2ea12aa58050d878ed9ac99bbbc084b16d0a6ddfe1c32d052d9",
+      "data/WaDi/WADI.A1_9 Oct 2017/WADI_attackdata.csv": "aff5eede7126352eec8803b1e940936ce7116b47cfc7b0a24d92f411bd24e562",
+      "data/WaDi/WADI.A1_9 Oct 2017/attack_description.xlsx": "5562f1c96fcf9f3baadf6e1bd3a6ff50463f53b54f3285e6bcc3fbe39be642ca"
+    },
+    "raw_train_rows": 1209601,
+    "raw_test_rows": 172801,
+    "paper_train_rows": 1048571,
+    "raw_anomaly_fraction": 0.05756911128986522,
+    "dropped_all_nan_channels": [
+      "2_LS_001_AL",
+      "2_LS_002_AL",
+      "2_P_001_STATUS",
+      "2_P_002_STATUS"
+    ],
+    "missing_before_fill": {
+      "train": 50,
+      "test": 0
+    },
+    "channels": [
+      "1_AIT_001_PV",
+      "1_AIT_002_PV",
+      "1_AIT_003_PV",
+      "1_AIT_004_PV",
+      "1_AIT_005_PV",
+      "1_FIT_001_PV",
+      "1_LS_001_AL",
+      "1_LS_002_AL",
+      "1_LT_001_PV",
+      "1_MV_001_STATUS",
+      "1_MV_002_STATUS",
+      "1_MV_003_STATUS",
+      "1_MV_004_STATUS",
+      "1_P_001_STATUS",
+      "1_P_002_STATUS",
+      "1_P_003_STATUS",
+      "1_P_004_STATUS",
+      "1_P_005_STATUS",
+      "1_P_006_STATUS",
+      "2_DPIT_001_PV",
+      "2_FIC_101_CO",
+      "2_FIC_101_PV",
+      "2_FIC_101_SP",
+      "2_FIC_201_CO",
+      "2_FIC_201_PV",
+      "2_FIC_201_SP",
+      "2_FIC_301_CO",
+      "2_FIC_301_PV",
+      "2_FIC_301_SP",
+      "2_FIC_401_CO",
+      "2_FIC_401_PV",
+      "2_FIC_401_SP",
+      "2_FIC_501_CO",
+      "2_FIC_501_PV",
+      "2_FIC_501_SP",
+      "2_FIC_601_CO",
+      "2_FIC_601_PV",
+      "2_FIC_601_SP",
+      "2_FIT_001_PV",
+      "2_FIT_002_PV",
+      "2_FIT_003_PV",
+      "2_FQ_101_PV",
+      "2_FQ_201_PV",
+      "2_FQ_301_PV",
+      "2_FQ_401_PV",
+      "2_FQ_501_PV",
+      "2_FQ_601_PV",
+      "2_LS_101_AH",
+      "2_LS_101_AL",
+      "2_LS_201_AH",
+      "2_LS_201_AL",
+      "2_LS_301_AH",
+      "2_LS_301_AL",
+      "2_LS_401_AH",
+      "2_LS_401_AL",
+      "2_LS_501_AH",
+      "2_LS_501_AL",
+      "2_LS_601_AH",
+      "2_LS_601_AL",
+      "2_LT_001_PV",
+      "2_LT_002_PV",
+      "2_MCV_007_CO",
+      "2_MCV_101_CO",
+      "2_MCV_201_CO",
+      "2_MCV_301_CO",
+      "2_MCV_401_CO",
+      "2_MCV_501_CO",
+      "2_MCV_601_CO",
+      "2_MV_001_STATUS",
+      "2_MV_002_STATUS",
+      "2_MV_003_STATUS",
+      "2_MV_004_STATUS",
+      "2_MV_005_STATUS",
+      "2_MV_006_STATUS",
+      "2_MV_009_STATUS",
+      "2_MV_101_STATUS",
+      "2_MV_201_STATUS",
+      "2_MV_301_STATUS",
+      "2_MV_401_STATUS",
+      "2_MV_501_STATUS",
+      "2_MV_601_STATUS",
+      "2_P_003_SPEED",
+      "2_P_003_STATUS",
+      "2_P_004_SPEED",
+      "2_P_004_STATUS",
+      "2_PIC_003_CO",
+      "2_PIC_003_PV",
+      "2_PIC_003_SP",
+      "2_PIT_001_PV",
+      "2_PIT_002_PV",
+      "2_PIT_003_PV",
+      "2_SV_101_STATUS",
+      "2_SV_201_STATUS",
+      "2_SV_301_STATUS",
+      "2_SV_401_STATUS",
+      "2_SV_501_STATUS",
+      "2_SV_601_STATUS",
+      "2A_AIT_001_PV",
+      "2A_AIT_002_PV",
+      "2A_AIT_003_PV",
+      "2A_AIT_004_PV",
+      "2B_AIT_001_PV",
+      "2B_AIT_002_PV",
+      "2B_AIT_003_PV",
+      "2B_AIT_004_PV",
+      "3_AIT_001_PV",
+      "3_AIT_002_PV",
+      "3_AIT_003_PV",
+      "3_AIT_004_PV",
+      "3_AIT_005_PV",
+      "3_FIT_001_PV",
+      "3_LS_001_AL",
+      "3_LT_001_PV",
+      "3_MV_001_STATUS",
+      "3_MV_002_STATUS",
+      "3_MV_003_STATUS",
+      "3_P_001_STATUS",
+      "3_P_002_STATUS",
+      "3_P_003_STATUS",
+      "3_P_004_STATUS",
+      "LEAK_DIFF_PRESSURE",
+      "PLANT_START_STOP_LOG",
+      "TOTAL_CONS_REQUIRED_FLOW"
+    ],
+    "notes": [
+      {
+        "label_intervals_inclusive": [
+          [
+            "2017-10-09 19:25:00",
+            "2017-10-09 19:50:16"
+          ],
+          [
+            "2017-10-10 10:24:10",
+            "2017-10-10 10:34:00"
+          ],
+          [
+            "2017-10-10 10:55:00",
+            "2017-10-10 11:24:00"
+          ],
+          [
+            "2017-10-10 11:07:46",
+            "2017-10-10 11:12:15"
+          ],
+          [
+            "2017-10-10 11:30:40",
+            "2017-10-10 11:44:50"
+          ],
+          [
+            "2017-10-10 13:39:30",
+            "2017-10-10 13:50:40"
+          ],
+          [
+            "2017-10-10 14:48:17",
+            "2017-10-10 14:59:55"
+          ],
+          [
+            "2017-10-10 17:40:00",
+            "2017-10-10 17:49:40"
+          ],
+          [
+            "2017-10-11 10:55:00",
+            "2017-10-11 10:56:27"
+          ],
+          [
+            "2017-10-11 11:17:54",
+            "2017-10-11 11:31:20"
+          ],
+          [
+            "2017-10-11 11:36:31",
+            "2017-10-11 11:47:00"
+          ],
+          [
+            "2017-10-11 11:59:00",
+            "2017-10-11 12:05:00"
+          ],
+          [
+            "2017-10-11 12:07:30",
+            "2017-10-11 12:10:52"
+          ],
+          [
+            "2017-10-11 12:16:00",
+            "2017-10-11 12:25:36"
+          ],
+          [
+            "2017-10-11 15:26:30",
+            "2017-10-11 15:37:00"
+          ]
+        ],
+        "label_source": "A1 attack_description.xlsx; corrected malformed year/month as documented in source"
+      },
+      "Missing-value policy unspecified upstream: forward fill within each split, then remaining leading NaNs = 0; all-empty training columns removed.",
+      "Available training file has 1209601 rows versus paper 1048571; kept full file, no undocumented truncation."
+    ]
+  },
+  "protocol_choices": [
+    "paper table 7 latent m used directly, not notebook hidden_size times window",
+    "batch size 7919, alpha=beta=.5, no shuffle, 80/20 split from notebook (not specified for paper runs)",
+    "fixed final epoch checkpoint; validation monitoring only, no test-driven checkpoint selection",
+    "minmax fit on full nominal file before downsampling and 80/20 window split, no test fitting or clipping",
+    "factor-five feature medians; labels max within each bin; last partial bin retained",
+    "80/20 split after windowing reproduces notebook overlap across split",
+    "unmodified upstream optimizer gradient-clearing semantics preserved",
+    "current PyTorch/CUDA differs from paper PyTorch1.3.1/CUDA10; seed42 is a declared local choice"
+  ],
+  "training_seconds": 128.64659010000105,
+  "total_seconds": 153.7748071999995
+}
