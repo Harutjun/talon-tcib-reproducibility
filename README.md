@@ -60,6 +60,13 @@ from the paper and linked here once posted to arXiv.
 
 Trained TALON/CVAE/Joint VAE checkpoints are not included in this release.
 
+**TODO / not yet verified**: this release has only been checked in-place (syntax-compiled and
+import-tested against the original working copy's environment) after trimming and renaming. It
+has NOT been verified end-to-end from a fresh clone: fresh `pip install -r requirements.txt`
+into a clean environment, then actually running `run_baseline_selfeval.py` /
+`run_gdn_selfeval.py` / `run_timesnet_selfeval.py` / `run_usad_published.py` against real
+SWaT/WADI data to completion. Do this before pointing anyone external at this repo.
+
 ## Setup
 
 ```
