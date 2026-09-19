@@ -986,12 +986,28 @@ def assemble_precision_from_bands_fn(precision_diag, precision_bands, bandwidth)
 
 
 def robust_cholesky_fn(M, jitter_start=1e-6, jitter_max=1e-1, max_tries=7):
-    """Attempt Cholesky with exponentially increasing jitter until success or cap."""
+    """Attempt Cholesky with exponentially increasing jitter until success or cap, falling
+    back to an eigenvalue-clamped PSD projection if the cap is reached."""
     device = M.device
     dtype = M.dtype
-    jitter = float(jitter_start)
     I = torch.eye(M.size(-1), device=device, dtype=dtype)
-    return torch.linalg.cholesky(M + jitter_start * I)
+    jitter = float(jitter_start)
+    for _ in range(max_tries):
+        try:
+            L = torch.linalg.cholesky(M + jitter * I)
+            if not torch.isnan(L).any():
+                return L
+        except (RuntimeError, torch._C._LinAlgError):
+            pass
+        jitter = min(jitter * 10.0, float(jitter_max))
+    try:
+        return torch.linalg.cholesky(M + jitter_max * I)
+    except (RuntimeError, torch._C._LinAlgError):
+        sym_M = 0.5 * (M + M.transpose(-2, -1))
+        eigvals, eigvecs = torch.linalg.eigh(sym_M)
+        eigvals = torch.clamp(eigvals, min=float(jitter_start))
+        M_psd = eigvecs @ torch.diag_embed(eigvals) @ eigvecs.transpose(-2, -1)
+        return torch.linalg.cholesky(M_psd)
 
 
 class _TALONTeacher_Shadow(nn.Module):

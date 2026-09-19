@@ -3,3 +3,7 @@ __pycache__/
 *.pth
 *.pt
 .idea/
+
+# SWaT/WADI are distributed under an iTrust data-use agreement and must never be committed.
+/data/
+*.csv

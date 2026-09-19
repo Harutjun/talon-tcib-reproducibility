@@ -1,96 +1,123 @@
 # TALON / TCIB Reproducibility
 
 Code accompanying "Teacher-Aligned Latent-Only Conditioning for Contextual Anomaly Detection
-in Paired Driving-Response Time Series" (ICASSP 2027 submission). This repository is scoped to
-the paper: it reproduces every number in Table 1 (the SWaT/WADI comparison) and nothing beyond
-it — no thesis-only ablations, no exploratory/debug scripts, no unrelated datasets.
+in Paired Driving-Response Time Series" (ICASSP 2027 submission). Reproduces every number in
+the paper's Table 1 (SWaT/WADI comparison). Trained checkpoints are not included; train from
+the released hyperparameters below, then score.
 
-The theoretical derivations (TCIB decomposition, the variational bound, and the
-Gaussian-process/Kronecker-precision construction) are in a separate companion note, referenced
-from the paper and linked here once posted to arXiv.
+## 1. Install
 
-## Model naming
-
-- `models/TALONTeacher.py` — Stage 1: the response-only teacher, $q_\phi(z\mid y)$ /
-  $p_\theta(y\mid z)$, trained with a standard VAE objective on nominal $Y$ alone.
-- `models/TALONStudent.py` — Stage 2: the student $q_\psi(z\mid x)$, aligned to the frozen
-  teacher's posterior and decoding through the frozen teacher decoder. Together, Teacher +
-  Student at inference is TALON.
-- `models/JointCVAE.py` — the paper's Joint VAE (models $p(X,Y)$ jointly) and CVAE (models
-  $p(Y\mid X)$ with the decoder reading $X$ directly) baselines; both are instances of this
-  class under different configurations.
-- `models/TSPCVAE.py`, `models/Modules.py` — shared transformer/patch encoder-decoder blocks
-  and the Kronecker/GP-prior machinery used by all three models above.
-
-## What's here
-
-- `reproducibility/final_table_rows.py` — the single entry point producing every TALON,
-  Teacher, and random-student-control number in Table 1, for both SWaT and WADI, at the full
-  seven-metric column coverage and seed count the paper reports.
-- `reproducibility/evaluate_swat_joint_cvae.py` / `evaluate_wadi_joint_cvae.py` — Joint VAE's
-  reported numbers (`compare_wadi_cvae_matched_estimator.py` documents why WADI's CVAE row uses
-  a scoring estimator matched to TALON's rather than the joint model's own importance-weighted
-  one).
-- `reproducibility/evaluate_swat_bestfull.py` — the shared metric pipeline
-  (`evaluate_all_metrics`: Point-F1, Precision, Recall, AUC-ROC, AUC-PR, VUS-ROC, VUS-PR,
-  Affiliation-F1, PATE) used by every row in the table, TALON and baselines alike.
-- `reproducibility/run_baseline_selfeval.py`, `run_gdn_selfeval.py`, `run_timesnet_selfeval.py`,
-  `run_usad_published.py` — self-evaluation of DAGMM, OmniAnomaly, MAD-GAN, GDN, TimesNet, and
-  USAD (USAD under its own paper's published training setup) on the identical SWaT/WADI data and
-  metric pipeline as TALON.
-- `reproducibility/baselines/` — vendored official-architecture implementations (DAGMM,
-  OmniAnomaly, MAD-GAN, TranAD, GDN, TimesNet, and the full USAD official repository under
-  `usad_official/`), sourced as noted in each file's header. TranAD, Anomaly-Transformer, and
-  PatchAD are literature-sourced in the paper (not self-evaluated here), so their baseline code
-  is not included.
-- `reproducibility/nmc_sweep_pipeline.py`, `evaluate_swat_stage2_ablations.py`,
-  `diagnose_random_student_control.py`, `rebuild_swat_ablation_bestfull.py`,
-  `evaluate_wadi_epoch164_full.py`, `runtime_guard.py` — supporting pipeline code the scripts
-  above depend on (the Monte-Carlo seed-count sensitivity check behind the paper's "sampling
-  variance is negligible" claim, the trained/random-student control, shared scoring/aggregation
-  helpers, and thread/GPU setup).
-- `datasets/LocalTSAD.py` — the SWaT/WADI CSV loading, channel-split, and scaling pipeline.
-- `results/swat_cve/BestFull/config.json`, `results/wadi_vae/WADI/BestFullChannels/config.json`
-  — the exact preprocessing configuration (scaler, window size, channel split) used for every
-  TALON/Teacher/CVAE/Joint VAE number in the paper.
-- `results/usad_published/{SWaT,WADI}_seed42/` — USAD's saved scores, training history, and
-  protocol record from its own-paper reproduction (metrics, not the trained checkpoint).
-- `reproducibility/results/baseline_selfeval_*.json` — the self-evaluation results for
-  DAGMM, OmniAnomaly, MAD-GAN, GDN, TimesNet on both datasets.
-
-Trained TALON/CVAE/Joint VAE checkpoints are not included in this release.
-
-**TODO / not yet verified**: this release has only been checked in-place (syntax-compiled and
-import-tested against the original working copy's environment) after trimming and renaming. It
-has NOT been verified end-to-end from a fresh clone: fresh `pip install -r requirements.txt`
-into a clean environment, then actually running `run_baseline_selfeval.py` /
-`run_gdn_selfeval.py` / `run_timesnet_selfeval.py` / `run_usad_published.py` against real
-SWaT/WADI data to completion. Do this before pointing anyone external at this repo.
-
-## Setup
-
-```
+```bash
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Also requires the `TSB_AD` and `PATE` packages (used by `evaluate_all_metrics` for VUS-ROC/
-VUS-PR/Affiliation-F1 and PATE respectively) and PyTorch with CUDA if available.
+Requires PyTorch with CUDA for practical training times. `requirements.txt` includes `TSB_AD`
+(VUS-ROC/VUS-PR/Affiliation-F1) and `PATE` (PATE-F1); if either fails to resolve from PyPI,
+install from source: https://github.com/TheDatumOrg/TSB-AD and
+https://github.com/Raminghorbanii/PATE.
 
-Datasets are not included. Point a script's `DATASETS` dict entries at your own SWaT/WADI CSVs
-(same layout as the original dataset releases); `datasets/LocalTSAD.py` documents the expected
-column and label conventions.
+## 2. Get the data (not included — see §4)
 
-## Running a baseline reproduction
+Place SWaT and WADI under `data/` as described in §4, then everything below runs as shown.
 
+## 3. Train
+
+```bash
+# Stage 1: teacher (VAE on Y alone)
+python training/train_teacher.py --dataset SWaT --epochs 24000 --batch_size 4096 \
+    --learning_rate 1e-4 --weight_decay 0.1 --alpha 1.0 --beta 0.033 --seed 42
+python training/train_teacher.py --dataset WADI --epochs 8000  --batch_size 2048 \
+    --learning_rate 1e-4 --weight_decay 0.1 --alpha 1.0 --beta 0.033 --seed 42
+
+# Stage 2: student (aligned to the frozen teacher)
+python training/train_student.py --dataset SWaT --vae_checkpoint <teacher_ckpt.pth> --seed 42
+python training/train_student.py --dataset WADI --vae_checkpoint <teacher_ckpt.pth> --seed 42
+
+# Baselines: Joint VAE and CVAE (per-dataset scripts; same architecture/capacity as TALON)
+python training/train_joint_vae.py --dataset SWaT
+python training/train_joint_vae.py --dataset WADI
+python training/train_cvae_swat.py
+python training/train_cvae_wadi.py
 ```
+
+Full per-run hyperparameters (architecture, window/patch size, optimizer, seed) are recorded
+in `results/swat_cve/BestFull/config.json` and `results/wadi_vae/WADI/BestFullChannels/config.json`
+— pass any field under `train_args` as the like-named CLI flag to match a released run exactly.
+`configs/spatial_benchmark_config.py` holds the architecture/training defaults these scripts
+fall back on when a flag isn't given.
+
+| | SWaT | WADI |
+|---|---|---|
+| window / patch / stride | 100 / 10 / 10 (teacher), 5 (student) | 100 / 10 / 1 |
+| latent dim / channel bandwidth | 26 / 26 | 60 / 10 |
+| encoder / decoder hidden dim | 64 / 64 | 120 / 120 |
+| transformer blocks (enc / dec) | 2 / 2 | 4 / 12 |
+| batch size, epochs (teacher) | 4096, 24000 | 2048, 8000 |
+| learning rate, weight decay | 1e-4, 0.1 | 1e-4, 0.1 |
+| alpha, beta (recon / KL weight) | 1.0, 0.033 | 1.0, 0.033 |
+| scaler | minmax | minmax |
+| seed | 42 | 42 |
+
+## 4. Score every Table 1 row
+
+```bash
+# TALON, Teacher, and random-student-control (all 3 in one run)
+python reproducibility/final_table_rows.py --datasets SWaT WADI
+
+# Table 1's "Teacher" row specifically (paper's own CNLL estimator, x_condition = 0)
+python reproducibility/score_teacher_nullx.py --datasets SWaT WADI
+
+# Joint VAE / CVAE
+python reproducibility/evaluate_swat_joint_cvae.py
+python reproducibility/evaluate_wadi_joint_cvae.py
+
+# Random Classifier (10-draw uniform-score reference)
+python reproducibility/trivial_baselines.py --datasets SWaT WADI
+
+# Self-evaluated baselines (each trains its own model, then scores it)
+python reproducibility/run_baseline_selfeval.py --dataset SWaT --model DAGMM
 python reproducibility/run_baseline_selfeval.py --dataset SWaT --model OmniAnomaly
-python reproducibility/run_usad_published.py --dataset SWaT
-python reproducibility/run_gdn_selfeval.py --dataset WADI
+python reproducibility/run_baseline_selfeval.py --dataset SWaT --model MAD_GAN
+python reproducibility/run_gdn_selfeval.py --dataset SWaT
+python reproducibility/run_timesnet_selfeval.py --dataset SWaT
+python reproducibility/run_usad_published.py --dataset both
+```
+(repeat the `--dataset SWaT` rows with `--dataset WADI`)
+
+Scoring hyperparameters (Monte Carlo draws, seeds, OOD clamp, fusion weight) are fixed in
+`reproducibility/final_table_rows.py`'s `SPEC` dict: `K_train=50`, `K_test=200`, 10 trained
+seeds + 3 random-control seeds (`seed_i = 42 + 1337*i`), OOD clamp 1.0 (SWaT) / 10.0 (WADI),
+consensus fusion weight `FUSION_LAMBDA = 1.0` on both datasets. Every script writes a JSON
+under `results/` with the full seven-metric row plus the run metadata needed to trace it back.
+
+## Dataset access (SWaT / WADI are not redistributed here)
+
+SWaT and WADI are released by iTrust, Centre for Research in Cyber Security, Singapore
+University of Technology and Design, under a data-use agreement that prohibits
+redistribution. Request access directly from iTrust (search "iTrust SUTD SWaT WADI dataset
+request"); this repository ships no CSVs, and `.gitignore` blocks committing any `data/` path
+or `*.csv` file.
+
+Place the files exactly as follows (paths and filenames are load-bearing — the loaders match
+on them literally):
+
+```
+data/
+├── SWaT/
+│   ├── SWaT_Dataset_Normal_v1.csv      # SWaT.A1 & A2 (Dec 2015), normal operation
+│   └── SWaT_Dataset_Attack_v0.csv      # same release, attack period
+└── WaDi/
+    ├── WADI.A2_19 Nov 2019/            # used by TALON/Teacher/CVAE/Joint VAE and every
+    │   ├── WADI_14days_new.csv         # self-evaluated baseline except USAD's own reproduction
+    │   └── WADI_attackdataLABLE.csv
+    └── WADI.A1_9 Oct 2017/             # only needed for run_usad_published.py, which
+        ├── WADI_14days.csv             # matches USAD's own published paper-config protocol
+        ├── WADI_attackdata.csv         # on the WADI release USAD itself was evaluated on
+        └── attack_description.xlsx
 ```
 
-Each script writes its own `reproducibility/results/baseline_selfeval_<dataset>_<model>.json`
-(or `results/usad_published/<dataset>_seed<seed>/`) with the full metric set plus training
-metadata (epochs trained, validation loss), so every number is traceable back to a specific run.
-
-Reproducing TALON/CVAE/Joint VAE's own numbers additionally requires their trained checkpoints
-(not included) at the paths `final_table_rows.SPEC` expects.
+SWaT's CSVs are read with their original headers and an `Attack CSV`'s `Normal/Attack` label
+column; WADI's are read with `WADI_14days_new.csv` skipping its 4-row spreadsheet header
+(`load_csv_dataset` in `datasets/LocalTSAD.py` documents the exact column and label
+conventions if a release ships under a different filename and needs a rename).
