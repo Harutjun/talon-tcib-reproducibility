@@ -25,9 +25,9 @@ Place SWaT and WADI under `data/` as described in §4, then everything below run
 
 ```bash
 # Stage 1: teacher (VAE on Y alone)
-python training/train_teacher.py --dataset SWaT --epochs 24000 --batch_size 4096 \
+python training/train_teacher.py --dataset SWaT --epochs 1000 --batch_size 4096 \
     --learning_rate 1e-4 --weight_decay 0.1 --alpha 1.0 --beta 0.033 --seed 42
-python training/train_teacher.py --dataset WADI --epochs 8000  --batch_size 2048 \
+python training/train_teacher.py --dataset WADI --epochs 1000 --batch_size 2048 \
     --learning_rate 1e-4 --weight_decay 0.1 --alpha 1.0 --beta 0.033 --seed 42
 
 # Stage 2: student (aligned to the frozen teacher)
@@ -41,6 +41,13 @@ python training/train_cvae_swat.py
 python training/train_cvae_wadi.py
 ```
 
+`--epochs` is a training-time budget, not a target: the script saves `best_vae.pth` whenever
+validation loss improves and keeps running for the full budget regardless, so the checkpoint
+actually used for the released numbers is from well before the `train_args.epochs` value
+recorded in their `config.json` (e.g. 24000/8000) — training that far is unnecessary. 1000
+epochs comfortably covers where both models saturate; watch `best_val_loss` in the printed
+log and raise `--epochs` only if it is still improving when the run ends.
+
 Full per-run hyperparameters (architecture, window/patch size, optimizer, seed) are recorded
 in `results/swat_cve/BestFull/config.json` and `results/wadi_vae/WADI/BestFullChannels/config.json`
 — pass any field under `train_args` as the like-named CLI flag to match a released run exactly.
@@ -53,7 +60,7 @@ fall back on when a flag isn't given.
 | latent dim / channel bandwidth | 26 / 26 | 60 / 10 |
 | encoder / decoder hidden dim | 64 / 64 | 120 / 120 |
 | transformer blocks (enc / dec) | 2 / 2 | 4 / 12 |
-| batch size, epochs (teacher) | 4096, 24000 | 2048, 8000 |
+| batch size, epoch budget (teacher) | 4096, 1000 | 2048, 1000 |
 | learning rate, weight decay | 1e-4, 0.1 | 1e-4, 0.1 |
 | alpha, beta (recon / KL weight) | 1.0, 0.033 | 1.0, 0.033 |
 | scaler | minmax | minmax |
