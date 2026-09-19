@@ -43,10 +43,10 @@ python training/train_cvae_wadi.py
 
 `--epochs` is a training-time budget, not a target: the script saves `best_vae.pth` whenever
 validation loss improves and keeps running for the full budget regardless, so the checkpoint
-actually used for the released numbers is from well before the `train_args.epochs` value
-recorded in their `config.json` (e.g. 24000/8000) — training that far is unnecessary. 1000
-epochs comfortably covers where both models saturate; watch `best_val_loss` in the printed
-log and raise `--epochs` only if it is still improving when the run ends.
+actually used for the released numbers is from well before the budget's end — training that
+far is unnecessary. 1000 epochs comfortably covers where both models saturate; watch
+`best_val_loss` in the printed log and raise `--epochs` only if it is still improving when
+the run ends.
 
 Full per-run hyperparameters (architecture, window/patch size, optimizer, seed) are recorded
 in `results/swat_cve/BestFull/config.json` and `results/wadi_vae/WADI/BestFullChannels/config.json`
