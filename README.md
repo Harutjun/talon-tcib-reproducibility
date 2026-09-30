@@ -1,7 +1,7 @@
 # TALON / TCIB Reproducibility
 
 Code accompanying "Teacher-Aligned Latent-Only Conditioning for Contextual Anomaly Detection
-in Paired Driving-Response Time Series" (ICASSP 2027 submission). Reproduces every number in
+in Paired Input-Output Time Series" (ICASSP 2027 submission). Reproduces every number in
 the paper's Table 1 (SWaT/WADI comparison). Trained checkpoints are not included; train from
 the released hyperparameters below, then score.
 
