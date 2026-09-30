@@ -128,3 +128,34 @@ SWaT's CSVs are read with their original headers and an `Attack CSV`'s `Normal/A
 column; WADI's are read with `WADI_14days_new.csv` skipping its 4-row spreadsheet header
 (`load_csv_dataset` in `datasets/LocalTSAD.py` documents the exact column and label
 conventions if a release ships under a different filename and needs a rename).
+
+## License
+
+This repository's own code is released under the BSD 3-Clause license — see `LICENSE`.
+
+Several baseline model implementations under `reproducibility/baselines/` are vendored from
+other projects under their own licenses, not this repository's: `tranad_bundle.py` (DAGMM,
+OmniAnomaly, MAD-GAN, TranAD; BSD-3-Clause, © Shreshth Tuli), `gdn.py` (MIT, © d-ailin),
+`timesnet.py` (MIT, © THUML @ Tsinghua University), and `usad_official/` (its own bundled
+`LICENSE`, BSD, © EURECOM). Full license text for each, and the exact upstream source files
+each was vendored from, is in `reproducibility/baselines/THIRD_PARTY_LICENSES.md`; every
+vendored file's own header additionally documents what was changed relative to the original
+(dead-code removal, dependency inlining, etc.) and why.
+
+SWaT and WADI are third-party datasets under a separate iTrust data-use agreement (§ above);
+this repository grants no rights to them and includes no dataset files.
+
+## Citing this work
+
+```bibtex
+@inproceedings{magakyan2027talon,
+  title     = {Teacher-Aligned Latent-Only Conditioning for Contextual Anomaly Detection
+               in Paired Driving-Response Time Series},
+  author    = {Magakyan, Harutjun and Shimkin, Nahum},
+  booktitle = {ICASSP 2027 (submitted)},
+  year      = {2027}
+}
+```
+
+This is a submitted manuscript; update the venue/year fields above once the paper's
+publication status is finalized.
